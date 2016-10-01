@@ -10,6 +10,22 @@
 <body>
 <div id="container"></div>
 <script src="three.min.js"></script>
+
+<script id="vertexShader" type="x-shader/x-vertex" src="grass.vert">
+attribute vec3 position;
+
+void main()
+{
+  gl_Position = vec4(position,1.0);
+}
+</script>
+
+<script id="fragmentShader" type="x-shader/x-fragment" src="grass.frag">
+void main()
+{
+    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+}
+</script>
 <script src="main.js"></script>
 </body>
 </html>

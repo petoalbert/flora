@@ -7,17 +7,30 @@ var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-var geometry = new THREE.BoxGeometry(1,1,1);
-var material = new THREE.MeshBasicMaterial({color: 0x00ff00});
-var cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
+var geometry = new THREE.BufferGeometry();
 
-camera.position.z += 5;
+var vertices = new THREE.BufferAttribute(new Float32Array(9), 3);
+vertices.setXYZ(0, -1, -1, 0);
+vertices.setXYZ(1, 1, -1, 0);
+vertices.setXYZ(2, 0, 1, 0);
+geometry.addAttribute('position', vertices);
+
+var material = new THREE.RawShaderMaterial( {
+  vertexShader: document.getElementById('vertexShader').textContent,
+  fragmentShader: document.getElementById('fragmentShader').textContent,
+  side: THREE.DoubleSide,
+});
+
+console.log("Content!!!");
+console.log(document.getElementById('vertexShader').textContent);
+
+var mesh = new THREE.Mesh(geometry, material);
+scene.add(mesh);
+
+camera.position.z += 50;
 
 function render() {
   requestAnimationFrame(render);
-  cube.rotation.x += 0.1;
-  cube.rotation.y += 0.1;
   renderer.render(scene,camera);
 }
 render();
