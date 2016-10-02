@@ -27,7 +27,7 @@ console.log(document.getElementById('vertexShader').textContent);
 var mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
 
-camera.position.z += 50;
+camera.position.z += 3;
 
 function render() {
   requestAnimationFrame(render);
