@@ -42,6 +42,11 @@ function render() {
   renderer.render(scene,camera);
 }
 
+function onWindowResize( event ) {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize( window.innerWidth, window.innerHeight );
+}
 
 function loadGrass(object) {
   var instances = 10000;
