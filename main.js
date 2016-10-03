@@ -56,7 +56,7 @@ function onWindowResize( event ) {
 }
 
 function loadGrass(object) {
-  var instances = 10000;
+  var instances = 20000;
   var spread = 40;
 
   var vertices = object.children[0].geometry.getAttribute("position");
