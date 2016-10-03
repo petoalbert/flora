@@ -75,6 +75,12 @@ function loadGrass(object) {
   }
   geometry.addAttribute('angle', angles);
 
+  var heights = new THREE.InstancedBufferAttribute(new Float32Array(instances),1,1);
+  for (var i=0; i<heights.count; i++) {
+    heights.setX(i,Math.random()+1);
+  }
+  geometry.addAttribute('height', heights);
+
   var material = new THREE.RawShaderMaterial( {
     vertexShader: document.getElementById('vertexShader').textContent,
     fragmentShader: document.getElementById('fragmentShader').textContent,
