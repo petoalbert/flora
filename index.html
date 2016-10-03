@@ -22,6 +22,7 @@ attribute vec3 color;
 attribute float angle;
 attribute float height;
 attribute float width;
+attribute float curve;
 
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
@@ -40,7 +41,8 @@ mat3 rotateAroundY(float angle)
 
 void main()
 {
-  vec3 scaled = vec3(position.x*width,position.y*height,position.z);
+  vec3 curved = vec3(position.x,position.y,position.z+position.y*position.y*curve);
+  vec3 scaled = vec3(curved.x*width,curved.y*height,curved.z);
   vec3 rotated = rotateAroundY(angle)*scaled;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(rotated+offset,1.0);
   vColor = color;
