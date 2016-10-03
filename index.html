@@ -18,6 +18,7 @@
 <div id="container"></div>
 <div id="info">Press: left to rotate, middle to zoom, right to pan</div>
 <div id="notSupported" style="display:none">Sorry your graphics card + browser does not support hardware instancing</div>
+<script src="datgui/dat.gui.js"></script>
 <script src="threejs/three.min.js"></script>
 <script src="threejs/OBJLoader.js"></script>
 <script src="threejs/TrackballControls.js"></script>
@@ -31,6 +32,9 @@ attribute float angle;
 attribute float height;
 attribute float width;
 attribute float curve;
+
+uniform float curveFactor;
+uniform float spreadFactor;
 
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
@@ -49,10 +53,10 @@ mat3 rotateAroundY(float angle)
 
 void main()
 {
-  vec3 curved = vec3(position.x,position.y,position.z+position.y*position.y*curve);
+  vec3 curved = vec3(position.x,position.y,position.z+position.y*position.y*curve*curveFactor);
   vec3 scaled = vec3(curved.x*width,curved.y*height,curved.z);
   vec3 rotated = rotateAroundY(angle)*scaled;
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(rotated+offset,1.0);
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(rotated+offset*spreadFactor,1.0);
   vColor = color;
 }
 

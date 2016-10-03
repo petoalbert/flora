@@ -4,6 +4,9 @@ render();
 var scene, camera, renderer, controls;
 var container, stats;
 
+var params;
+var mesh;
+
 function init() {
   container = document.getElementById("container");
 
@@ -40,12 +43,24 @@ function init() {
 
   stats = new Stats();
   container.appendChild(stats.dom);
+
+  params = {
+    curveFactor: 1,
+    spreadFactor: 1
+  };
+  var gui = new dat.GUI();
+  gui.add(params, "curveFactor", 0,4);
+  gui.add(params, "spreadFactor", 1,10);
 }
 
 function render() {
   requestAnimationFrame(render);
   controls.update();
   stats.update();
+  if (mesh != undefined) {
+    mesh.material.uniforms.curveFactor.value = params.curveFactor;
+    mesh.material.uniforms.spreadFactor.value = params.spreadFactor;
+  }
   renderer.render(scene,camera);
 }
 
@@ -101,13 +116,17 @@ function loadGrass(object) {
   geometry.addAttribute('curve', curves);
 
   var material = new THREE.RawShaderMaterial( {
+    uniforms: {
+      curveFactor: {value: 1},
+      spreadFactor: {value: 1}
+    },
     vertexShader: document.getElementById('vertexShader').textContent,
     fragmentShader: document.getElementById('fragmentShader').textContent,
     side: THREE.DoubleSide,
     transparent: true
   });
 
-  var mesh = new THREE.Mesh(geometry, material);
+  mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh);
   render();
 }
