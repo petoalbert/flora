@@ -72,7 +72,7 @@ function loadGrass(object) {
 
   var colors = new THREE.InstancedBufferAttribute(new Float32Array(instances*3),3,1);
   for (var i=0; i<colors.count; i++) {
-    colors.setXYZ(i,0.1+Math.random()/4,0.5+Math.random()/2,0.2+Math.random()/4);
+    colors.setXYZ(i,Math.random()*0.2,0.4+Math.random()*0.6,Math.random()*0.1);
   }
   geometry.addAttribute('color', colors);
 
