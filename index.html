@@ -20,6 +20,7 @@ attribute vec3 offset;
 attribute vec3 color;
 attribute float angle;
 attribute float height;
+attribute float width;
 
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
@@ -41,7 +42,7 @@ mat4 rotationMatrix(vec3 axis, float angle)
 
 void main()
 {
-  vec3 scaled = vec3(position.x,position.y*height,position.z);
+  vec3 scaled = vec3(position.x*width,position.y*height,position.z);
   vec4 rotated = rotationMatrix(vec3(0.0,1.0,0.0),angle)*vec4(scaled,1.0);
   gl_Position = projectionMatrix * modelViewMatrix * (rotated+vec4(offset,1.0));
   vColor = color;
