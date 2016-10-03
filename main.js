@@ -4,6 +4,7 @@ render();
 var scene, camera, renderer, controls;
 var container, stats;
 
+var gui;
 var params;
 var mesh;
 
@@ -48,7 +49,7 @@ function init() {
     curveFactor: 1,
     spreadFactor: 1
   };
-  var gui = new dat.GUI();
+  gui = new dat.GUI();
   gui.add(params, "curveFactor", 0,4);
   gui.add(params, "spreadFactor", 1,10);
 }
@@ -77,6 +78,7 @@ function loadGrass(object) {
   var vertices = object.children[0].geometry.getAttribute("position");
   var geometry = new THREE.InstancedBufferGeometry();
   geometry.maxInstancedCount = instances;
+  gui.add(geometry, 'maxInstancedCount',1,instances);
   geometry.addAttribute('position',vertices);
 
   var offsets = new THREE.InstancedBufferAttribute(new Float32Array(instances*3),3,1);
