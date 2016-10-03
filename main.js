@@ -12,7 +12,7 @@ function init() {
                                           window.innerWidth/window.innerHeight,
                                           0.1,
                                           1000);
-  renderer = new THREE.WebGLRenderer({antialias: true});
+  renderer = new THREE.WebGLRenderer();
   if ( renderer.extensions.get( 'ANGLE_instanced_arrays' ) === false ) {
 	 //document.getElementById( "notSupported" ).style.display = "";
    console.log("Error");
