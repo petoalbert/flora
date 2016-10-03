@@ -2,8 +2,11 @@ init();
 render();
 
 var scene, camera, renderer, controls;
+var container, stats;
 
 function init() {
+  container = document.getElementById("container");
+
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(75,
                                           window.innerWidth/window.innerHeight,
@@ -34,11 +37,15 @@ function init() {
 
   var loader = new THREE.OBJLoader();
   loader.load('grass.obj',loadGrass);
+
+  stats = new Stats();
+  container.appendChild(stats.dom);
 }
 
 function render() {
   requestAnimationFrame(render);
   controls.update();
+  stats.update();
   renderer.render(scene,camera);
 }
 
