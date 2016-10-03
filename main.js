@@ -10,10 +10,16 @@ function init() {
                                           0.1,
                                           1000);
   renderer = new THREE.WebGLRenderer({antialias: true});
+  if ( renderer.extensions.get( 'ANGLE_instanced_arrays' ) === false ) {
+	 //document.getElementById( "notSupported" ).style.display = "";
+   console.log("Error");
+	 return;
+  }
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  camera.position.z += 6;
+  camera.position.z += 5;
+  camera.position.y += 5;
 
   controls = new THREE.TrackballControls( camera );
   controls.rotateSpeed = 5.0;
@@ -38,14 +44,31 @@ function render() {
 
 
 function loadGrass(object) {
+  var instances = 10000;
+  var spread = 40;
+
   var vertices = object.children[0].geometry.getAttribute("position");
-  var geometry = new THREE.BufferGeometry();
+  var geometry = new THREE.InstancedBufferGeometry();
+  geometry.maxInstancedCount = instances;
   geometry.addAttribute('position',vertices);
+
+  var offsets = new THREE.InstancedBufferAttribute(new Float32Array(instances*3),3,1);
+  for (var i=0; i<offsets.count; i++) {
+      offsets.setXYZ(i, Math.random()*spread-spread/2, 0, Math.random()*spread-spread/2);
+  }
+  geometry.addAttribute('offset', offsets);
+
+  var colors = new THREE.InstancedBufferAttribute(new Float32Array(instances*3),3,1);
+  for (var i=0; i<colors.count; i++) {
+    colors.setXYZ(i,0.1+Math.random()/4,0.5+Math.random()/2,0.2+Math.random()/4);
+  }
+  geometry.addAttribute('color', colors);
 
   var material = new THREE.RawShaderMaterial( {
     vertexShader: document.getElementById('vertexShader').textContent,
     fragmentShader: document.getElementById('fragmentShader').textContent,
     side: THREE.DoubleSide,
+    transparent: true
   });
 
   var mesh = new THREE.Mesh(geometry, material);

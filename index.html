@@ -12,22 +12,29 @@
 <script src="three.min.js"></script>
 <script src="OBJLoader.js"></script>
 <script src="TrackballControls.js"></script>
+
 <script id="vertexShader" type="x-shader/x-vertex">
 attribute vec3 position;
+attribute vec3 offset;
+attribute vec3 color;
 
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
 
+varying vec3 vColor;
 void main()
 {
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position+offset,1.0);
+  vColor = color;
 }
 </script>
 
 <script id="fragmentShader" type="x-shader/x-fragment">
+precision highp float;
+varying vec3 vColor;
 void main()
 {
-    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    gl_FragColor = vec4(vColor, 1.0);
 }
 </script>
 
