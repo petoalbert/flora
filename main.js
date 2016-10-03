@@ -21,8 +21,8 @@ function init() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  camera.position.z += 5;
-  camera.position.y += 5;
+  camera.position.z += 30;
+  camera.position.y += 30;
 
   controls = new THREE.TrackballControls( camera );
   controls.rotateSpeed = 5.0;
