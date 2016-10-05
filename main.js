@@ -50,7 +50,7 @@ function init() {
     spreadFactor: 1
   };
   gui = new dat.GUI();
-  gui.add(params, "curveFactor", 0,4);
+  gui.add(params, "curveFactor", 0.1,4);
   gui.add(params, "spreadFactor", 1,10);
 }
 
@@ -103,17 +103,18 @@ function loadGrass(object) {
   for (var i=0; i<heights.count; i++) {
     heights.setX(i,Math.random()+1);
   }
-  geometry.addAttribute('height', heights);
+  geometry.addAttribute('heightCoefficient', heights);
 
   var widths = new THREE.InstancedBufferAttribute(new Float32Array(instances),1,1);
   for (var i=0; i<widths.count; i++) {
     widths.setX(i,Math.random()+1);
   }
-  geometry.addAttribute('width', widths);
+  geometry.addAttribute('widthCoefficient', widths);
 
   var curves = new THREE.InstancedBufferAttribute(new Float32Array(instances),1,1);
   for (var i=0; i<curves.count; i++) {
-    curves.setX(i,Math.random()*0.3);
+    // Set the tip of the pieces to an angle between 0 and approx. 40 degrees 
+    curves.setX(i,Math.random()*0.7);
   }
   geometry.addAttribute('curve', curves);
 

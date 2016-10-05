@@ -32,18 +32,27 @@
 attribute vec3 position;
 attribute vec3 offset;
 attribute vec3 color;
-attribute float angle;
-attribute float height;
-attribute float width;
-attribute float curve;
 
+// Angle around vertical axis (yaw)
+attribute float angle;
+// scale the height by this number
+attribute float heightCoefficient;
+// scale the width by this number
+attribute float widthCoefficient;
+// the tilt of the tip of the grass piece against the vertical
+attribute float curve;
+// multiply curve by this number
 uniform float curveFactor;
+// how spread out the pieces are in the field
 uniform float spreadFactor;
 
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
 
 varying vec3 vColor;
+
+const float PI = 3.141592653589793238462643383;
+const float unitHeight = 3.66;
 
 mat3 rotateAroundY(float angle)
 {
@@ -58,11 +67,17 @@ mat3 rotateAroundY(float angle)
 void main()
 {
   vec3 vPosition = position;
-  // curve
-  vPosition.z += vPosition.y*vPosition.y*curve*curveFactor;
-  // scale
-  vPosition.x *= width;
-  vPosition.y *= height;
+  vPosition.x *= widthCoefficient;
+
+  // the length (height) of the scaled piece
+  float len = unitHeight*heightCoefficient;
+  // the imaginary radius of the arc
+  float r = len/(curve*curveFactor);
+  // the tilt of the piece corresponding to the vPosition.y parameter
+  float tilt = vPosition.y*heightCoefficient/r;
+  vPosition.z = cos(tilt)*r-r;
+  vPosition.y = sin(tilt)*r;
+
   vPosition = rotateAroundY(angle)*vPosition;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(vPosition+offset*spreadFactor,1.0);
   vColor = color;
