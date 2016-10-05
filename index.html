@@ -57,10 +57,14 @@ mat3 rotateAroundY(float angle)
 
 void main()
 {
-  vec3 curved = vec3(position.x,position.y,position.z+position.y*position.y*curve*curveFactor);
-  vec3 scaled = vec3(curved.x*width,curved.y*height,curved.z);
-  vec3 rotated = rotateAroundY(angle)*scaled;
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(rotated+offset*spreadFactor,1.0);
+  vec3 vPosition = position;
+  // curve
+  vPosition.z += vPosition.y*vPosition.y*curve*curveFactor;
+  // scale
+  vPosition.x *= width;
+  vPosition.y *= height;
+  vPosition = rotateAroundY(angle)*vPosition;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(vPosition+offset*spreadFactor,1.0);
   vColor = color;
 }
 
