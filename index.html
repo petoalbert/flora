@@ -33,7 +33,7 @@ attribute vec3 position;
 attribute vec3 offset;
 attribute vec3 color;
 
-// Angle around vertical axis (yaw)
+// Angle around vertical axis (yaw). Lies between 0 and 2*PI
 attribute float angle;
 // scale the height by this number
 attribute float heightCoefficient;
@@ -51,7 +51,13 @@ uniform mat4 projectionMatrix;
 
 varying vec3 vColor;
 
+// Global time
+uniform float time;
+// Startinf time of the wind blow
+uniform float windStartTime;
+
 const float PI = 3.141592653589793238462643383;
+// The original height in the y direction of a grass piece
 const float unitHeight = 3.66;
 
 mat3 rotateAroundY(float angle)
@@ -64,6 +70,77 @@ mat3 rotateAroundY(float angle)
                 s, 0 , c);
 }
 
+/*
+ * Return a value between -1 and 1 which represents the strength of wind.
+ * A value near zero means that the wind has weak effects on the grass piece,
+ * while a value near -1 or 1 means the wind has strong effects. The sign of
+ * the returned value means the effects relative to the pieces curvature, i.e.,
+ * if the wind blows agains the curve, it will have a negative value.
+ */
+float wind()
+{
+  // the relative position-dependent time since the wind has started
+  float t = time-windStartTime+(offset.z/20.0);
+  // the amount of time it takes for the wind to deflect a grass piece to
+  // its maximum
+  float riseTime = 0.75;
+  float spread = riseTime/2.0;
+  // the amount of time for which the piece should be deflected at its maximum
+  // for now we dont use it, so it is 0
+  float len = 0.0;
+  // the angle at which the wind blows. It is assumed to be 0 now
+  float windAngle = 0.0;
+  // the difference between the pieces angle and the wind angle.
+  // this value can only be between -2*PI and 0.
+  float diff = windAngle - angle;
+  // -1.0 if the wind blows agains the pieces curvature, 1.0 otherwise
+  float reverse = 1.0;
+  if (diff < -PI/2.0 && diff > -3.0*PI/2.0) {
+    reverse = -1.0;
+  }
+  // The transitional stage is governed by one half of a Gaussian function,
+  // while the maximum deflection stage is constant (-1.0 or 1.0)
+  if (t < riseTime) {
+    return reverse*exp(-pow(t-riseTime,2.0)/spread);
+  } else if (t > (riseTime+len)) {
+    return reverse*exp(-pow(t-riseTime-len,2.0)/spread);
+  } else {
+    return reverse*1.0;
+  }
+}
+
+/*
+ * Return the angle to which the wind in its strongest state will rotate
+ * the tip of the grass piece.
+ */
+float rotateInWind()
+{
+  // For now the wind angle can only be 0.0
+  float windAngle = 0.0;
+  float diff = windAngle-angle;
+  // The wind never rotates more than 90 degrees
+  if (diff < -PI/2.0 && diff > -PI) {
+    diff = PI+diff;
+  } else if (diff < -PI && diff > -3.0*PI/2.0) {
+    diff = PI+diff;
+  } else if (diff < -3.0*PI/2.0) {
+    diff = 2.0*PI+diff;
+  }
+  // The lowest height on the grass piece at which it can twist
+  float twistHeight = unitHeight*0.3;
+  // The amount that this vertex will twist
+  float twistCoefficient = (position.y-twistHeight)/unitHeight;
+
+  if (position.y < twistHeight) {
+    return 0.0;
+  } else if (twistCoefficient < 1.0) {
+    return diff*twistCoefficient;
+  } else {
+    return diff;
+  }
+
+}
+
 void main()
 {
   vec3 vPosition = position;
@@ -71,14 +148,19 @@ void main()
 
   // the length (height) of the scaled piece
   float len = unitHeight*heightCoefficient;
+  // wind is zero degrees
+  float windAngle = angle;
+
+  float windStrength = wind();
   // the imaginary radius of the arc
-  float r = len/(curve*curveFactor);
+  float r = len/(curve*curveFactor+0.5*windStrength);
   // the tilt of the piece corresponding to the vPosition.y parameter
   float tilt = vPosition.y*heightCoefficient/r;
   vPosition.z = cos(tilt)*r-r;
   vPosition.y = sin(tilt)*r;
 
-  vPosition = rotateAroundY(angle)*vPosition;
+  // rotate around y axis
+  vPosition = rotateAroundY(angle+rotateInWind()*abs(windStrength))*vPosition;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(vPosition+offset*spreadFactor,1.0);
   vColor = color;
 }

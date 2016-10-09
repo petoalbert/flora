@@ -7,6 +7,7 @@ var container, stats;
 var gui;
 var params;
 var mesh;
+var clock;
 
 function init() {
   container = document.getElementById("container");
@@ -47,11 +48,16 @@ function init() {
 
   params = {
     curveFactor: 1,
-    spreadFactor: 1
+    spreadFactor: 1,
+    newWind: false,
+    wind: function() {params.newWind = true;}
   };
   gui = new dat.GUI();
   gui.add(params, "curveFactor", 0.1,4);
   gui.add(params, "spreadFactor", 1,10);
+  gui.add(params, "wind");
+
+  clock = new THREE.Clock()
 }
 
 function render() {
@@ -61,6 +67,11 @@ function render() {
   if (mesh != undefined) {
     mesh.material.uniforms.curveFactor.value = params.curveFactor;
     mesh.material.uniforms.spreadFactor.value = params.spreadFactor;
+    mesh.material.uniforms.time.value = clock.getElapsedTime();
+    if (params.newWind) {
+      mesh.material.uniforms.windStartTime.value = clock.getElapsedTime();
+      params.newWind = false;
+    }
   }
   renderer.render(scene,camera);
 }
@@ -95,7 +106,7 @@ function loadGrass(object) {
 
   var angles = new THREE.InstancedBufferAttribute(new Float32Array(instances),1,1);
   for (var i=0; i<angles.count; i++) {
-    angles.setX(i,Math.random()*Math.PI);
+    angles.setX(i,Math.random()*2*Math.PI);
   }
   geometry.addAttribute('angle', angles);
 
@@ -113,7 +124,7 @@ function loadGrass(object) {
 
   var curves = new THREE.InstancedBufferAttribute(new Float32Array(instances),1,1);
   for (var i=0; i<curves.count; i++) {
-    // Set the tip of the pieces to an angle between 0 and approx. 40 degrees 
+    // Set the tip of the pieces to an angle between 0 and approx. 40 degrees
     curves.setX(i,Math.random()*0.7);
   }
   geometry.addAttribute('curve', curves);
@@ -121,7 +132,9 @@ function loadGrass(object) {
   var material = new THREE.RawShaderMaterial( {
     uniforms: {
       curveFactor: {value: 1},
-      spreadFactor: {value: 1}
+      spreadFactor: {value: 1},
+      time: {value: clock.getElapsedTime()},
+      windStartTime: {value: clock.getElapsedTime()-100}
     },
     vertexShader: document.getElementById('vertexShader').textContent,
     fragmentShader: document.getElementById('fragmentShader').textContent,
