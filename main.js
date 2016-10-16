@@ -71,6 +71,7 @@ function render() {
     mesh.material.uniforms.time.value = clock.getElapsedTime();
     if (params.newWind) {
       mesh.material.uniforms.windStartTime.value = clock.getElapsedTime();
+      mesh.material.uniforms.windAngle.value = Math.random()*2*Math.PI;
       params.newWind = false;
     }
   }
@@ -136,7 +137,9 @@ function loadGrass(object) {
       curveFactor: {value: 1},
       spreadFactor: {value: 1},
       time: {value: clock.getElapsedTime()},
-      windStartTime: {value: clock.getElapsedTime()-100}
+      windStartTime: {value: clock.getElapsedTime()-100},
+      spread: {value: params.spread},
+      windAngle: {value: 0}
     },
     vertexShader: document.getElementById('vertexShader').textContent,
     fragmentShader: document.getElementById('fragmentShader').textContent,
