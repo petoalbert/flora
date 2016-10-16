@@ -50,6 +50,7 @@ function init() {
     curveFactor: 1,
     spreadFactor: 1,
     newWind: false,
+    spread: 40,
     wind: function() {params.newWind = true;}
   };
   gui = new dat.GUI();
@@ -84,7 +85,6 @@ function onWindowResize( event ) {
 
 function loadGrass(object) {
   var instances = 20000;
-  var spread = 40;
 
   var vertices = object.children[0].geometry.getAttribute("position");
   var geometry = new THREE.InstancedBufferGeometry();
@@ -94,7 +94,7 @@ function loadGrass(object) {
 
   var offsets = new THREE.InstancedBufferAttribute(new Float32Array(instances*3),3,1);
   for (var i=0; i<offsets.count; i++) {
-      var r = Math.random()*spread-spread/2;
+      var r = Math.random()*params.spread-params.spread/2;
       var a = Math.random()*Math.PI*2;
       offsets.setXYZ(i, Math.cos(a)*r, 0, Math.sin(a)*r);
   }
