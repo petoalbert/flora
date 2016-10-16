@@ -122,7 +122,11 @@ float wind()
   if (t < riseTime) {
     return reverse*exp(-pow(t-riseTime,2.0)/spread);
   } else if (t > (riseTime+len)) {
-    return reverse*exp(-pow(t-riseTime-len,2.0)/spread);
+    // These values are empirically determined. They are used to
+    // give a delayed spring-like rundown after the wind
+    float x = t-riseTime-len;
+    float f = 0.3*PI/riseTime;
+    return reverse*cos(f*x)*exp(-pow(x,2.0)/(25.0*spread));
   } else {
     return reverse*1.0;
   }
