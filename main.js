@@ -54,7 +54,7 @@ function init() {
     wind: function() {params.newWind = true;}
   };
   gui = new dat.GUI();
-  gui.add(params, "curveFactor", 0.1,4);
+  gui.add(params, "curveFactor", 0.1,1.5);
   gui.add(params, "spreadFactor", 1,10);
   gui.add(params, "wind");
 
@@ -90,7 +90,8 @@ function loadGrass(object) {
 
   var vertices = object.children[0].geometry.getAttribute("position");
   var geometry = new THREE.InstancedBufferGeometry();
-  geometry.maxInstancedCount = instances;
+  // Start with only half of the maximum instances for low-performance computers
+  geometry.maxInstancedCount = instances/2;
   gui.add(geometry, 'maxInstancedCount',1,instances);
   geometry.addAttribute('position',vertices);
 
