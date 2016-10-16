@@ -94,7 +94,9 @@ function loadGrass(object) {
 
   var offsets = new THREE.InstancedBufferAttribute(new Float32Array(instances*3),3,1);
   for (var i=0; i<offsets.count; i++) {
-      offsets.setXYZ(i, Math.random()*spread-spread/2, 0, Math.random()*spread-spread/2);
+      var r = Math.random()*spread-spread/2;
+      var a = Math.random()*Math.PI*2;
+      offsets.setXYZ(i, Math.cos(a)*r, 0, Math.sin(a)*r);
   }
   geometry.addAttribute('offset', offsets);
 
