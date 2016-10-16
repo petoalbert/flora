@@ -33,6 +33,7 @@ attribute vec3 position;
 attribute vec3 offset;
 attribute vec3 color;
 
+attribute float stiffness;
 // Angle around vertical axis (yaw). Lies between 0 and 2*PI
 attribute float angle;
 // scale the height by this number
@@ -166,7 +167,6 @@ void main()
 {
   vec3 vPosition = position;
   vPosition.x *= widthCoefficient;
-
   // the length (height) of the scaled piece
   float len = unitHeight*heightCoefficient;
   // wind is zero degrees
@@ -174,7 +174,11 @@ void main()
 
   float windStrength = wind();
   // the imaginary radius of the arc
-  float r = len/(curve*curveFactor+0.5*windStrength);
+
+  float freq = (2.0/stiffness) + 2.0;
+  float amplitude = (0.3*(PI/180.0));
+  // the imaginary radius of the arc
+  float r = len/(curve*curveFactor+0.5*windStrength+amplitude*sin(freq*time));
   // the tilt of the piece corresponding to the vPosition.y parameter
   float tilt = vPosition.y*heightCoefficient/r;
   vPosition.z = cos(tilt)*r-r;

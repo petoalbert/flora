@@ -66,6 +66,7 @@ function render() {
   controls.update();
   stats.update();
   if (mesh != undefined) {
+    mesh.material.uniforms.time.value = clock.getElapsedTime();
     mesh.material.uniforms.curveFactor.value = params.curveFactor;
     mesh.material.uniforms.spreadFactor.value = params.spreadFactor;
     mesh.material.uniforms.time.value = clock.getElapsedTime();
@@ -132,8 +133,15 @@ function loadGrass(object) {
   }
   geometry.addAttribute('curve', curves);
 
+  var frequencies = new THREE.InstancedBufferAttribute(new Float32Array(instances),1,1);
+  for (var i=0; i<frequencies.count; i++) {
+    frequencies.setX(i,Math.random()/2 + 0.5);
+  }
+  geometry.addAttribute('stiffness', frequencies);
+
   var material = new THREE.RawShaderMaterial( {
     uniforms: {
+      time: {value: clock.getElapsedTime()},
       curveFactor: {value: 1},
       spreadFactor: {value: 1},
       time: {value: clock.getElapsedTime()},
