@@ -51,6 +51,9 @@ function init() {
     spreadFactor: 1,
     newWind: false,
     spread: 40,
+    windSpeed: 20,
+    windRiseTime: 0.75,
+    windSettlingTime: 7.5,
     windStartTime: -100,
   };
   gui = new dat.GUI();
@@ -80,8 +83,10 @@ function render() {
 }
 
 function wind() {
+  // Iterate 30 times per second
   setTimeout(wind, 1000/30);
-  var windLength = 0.387+params.spread/20+0.387*15;
+  var windLength = (params.windRiseTime + params.windSettlingTime+params.spread/20)*1.2;
+  // Only start new wind if the previous one has finished
   if (clock.getElapsedTime() - params.windStartTime > windLength) {
     params.newWind = true;
   }
@@ -156,7 +161,10 @@ function loadGrass(object) {
       time: {value: clock.getElapsedTime()},
       windStartTime: {value: clock.getElapsedTime()-100},
       spread: {value: params.spread},
-      windAngle: {value: 0}
+      windAngle: {value: 0},
+      windSpeed: {value: params.windSpeed},
+      windRiseTime: {value: params.windRiseTime},
+      windSettlingTime: {value: params.windSettlingTime}
     },
     vertexShader: document.getElementById('vertexShader').textContent,
     fragmentShader: document.getElementById('fragmentShader').textContent,

@@ -61,6 +61,12 @@ uniform float time;
 uniform float windStartTime;
 // The angle in which the wind blows. It is assumed to be between 0 and 2*PI
 uniform float windAngle;
+// The speed at which the wind travels through the field
+uniform float windSpeed;
+// The time it takes for the wind to fully deflect a grass piece
+uniform float windRiseTime;
+// The time it takes for the grass piece to go back to natural position
+uniform float windSettlingTime;
 
 const float PI = 3.141592653589793238462643383;
 // The original height in the y direction of a grass piece
@@ -102,11 +108,12 @@ float wind()
   // when the wind started
   float virtualDistance = (cos(windAngle)*offset.z + sin(windAngle)*offset.x)-spread/2.0;
   // the relative position-dependent time since the wind has started
-  float t = time-windStartTime+(virtualDistance/20.0);
-  // the amount of time it takes for the wind to deflect a grass piece to
-  // its maximum
-  float riseTime = 0.75;
-  float spread = riseTime/2.0;
+  float t = time-windStartTime+(virtualDistance/windSpeed);
+  // helper values for the gaussian functions: spread the settlingSpread
+  // will be the times for which the half-gaussian will be above the
+  // 10% of its maximal value.
+  float spread = windRiseTime/2.145965;
+  float settlingSpread = windSettlingTime/2.145965;
   // the amount of time for which the piece should be deflected at its maximum
   // for now we dont use it, so it is 0
   float len = 0.0;
@@ -120,14 +127,13 @@ float wind()
   }
   // The transitional stage is governed by one half of a Gaussian function,
   // while the maximum deflection stage is constant (-1.0 or 1.0)
-  if (t < riseTime) {
-    return reverse*exp(-pow(t-riseTime,2.0)/spread);
-  } else if (t > (riseTime+len)) {
-    // These values are empirically determined. They are used to
-    // give a delayed spring-like rundown after the wind
-    float x = t-riseTime-len;
-    float f = 0.3*PI/riseTime;
-    return reverse*cos(f*x)*exp(-pow(x,2.0)/(25.0*spread));
+  if (t < windRiseTime) {
+    return reverse*exp(-pow(t-windRiseTime,2.0)/(2.0*pow(spread,2.0)));
+  } else if (t > (windRiseTime+len)) {
+    float x = t-windRiseTime-len;
+    // Do a full cosine in the settling phase
+    float f = 1.0*2.0*PI/windSettlingTime;
+    return reverse*cos(f*x)*exp(-pow(x,2.0)/(2.0*pow(settlingSpread,2.0)));
   } else {
     return reverse*1.0;
   }
