@@ -128,7 +128,9 @@ float wind()
   // The transitional stage is governed by one half of a Gaussian function,
   // while the maximum deflection stage is constant (-1.0 or 1.0)
   if (t < windRiseTime) {
-    return reverse*exp(-pow(t-windRiseTime,2.0)/(2.0*pow(spread,2.0)));
+    // We need to work with abs because pow result is undefined if the
+    // first argument is a negative value
+    return reverse*exp(-pow(abs(t-windRiseTime),2.0)/(2.0*pow(spread,2.0)));
   } else if (t > (windRiseTime+len)) {
     float x = t-windRiseTime-len;
     // Do a full cosine in the settling phase
