@@ -51,12 +51,11 @@ function init() {
     spreadFactor: 1,
     newWind: false,
     spread: 40,
-    wind: function() {params.newWind = true;}
+    windStartTime: -100,
   };
   gui = new dat.GUI();
   gui.add(params, "curveFactor", 0.1,1.5);
   gui.add(params, "spreadFactor", 1,10);
-  gui.add(params, "wind");
 
   clock = new THREE.Clock()
 }
@@ -71,12 +70,21 @@ function render() {
     mesh.material.uniforms.spreadFactor.value = params.spreadFactor;
     mesh.material.uniforms.time.value = clock.getElapsedTime();
     if (params.newWind) {
-      mesh.material.uniforms.windStartTime.value = clock.getElapsedTime();
+      params.windStartTime = clock.getElapsedTime();
+      mesh.material.uniforms.windStartTime.value = params.windStartTime;
       mesh.material.uniforms.windAngle.value = Math.random()*2*Math.PI;
       params.newWind = false;
     }
   }
   renderer.render(scene,camera);
+}
+
+function wind() {
+  setTimeout(wind, 1000/30);
+  var windLength = 0.387+params.spread/20+0.387*15;
+  if (clock.getElapsedTime() - params.windStartTime > windLength) {
+    params.newWind = true;
+  }
 }
 
 function onWindowResize( event ) {
@@ -159,4 +167,5 @@ function loadGrass(object) {
   mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh);
   render();
+  wind();
 }
