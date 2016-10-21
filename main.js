@@ -173,6 +173,7 @@ function loadGrass(object) {
   });
 
   mesh = new THREE.Mesh(geometry, material);
+  mesh.frustumCulled = false;
   scene.add(mesh);
   render();
   wind();
