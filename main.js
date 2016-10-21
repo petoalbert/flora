@@ -1,10 +1,10 @@
 init();
 render();
+setUpPointerLock();
 
 var scene, camera, renderer, controls;
 var container, stats;
 
-var gui;
 var params;
 var mesh;
 var clock;
@@ -26,19 +26,8 @@ function init() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  camera.position.z += 30;
-  camera.position.y += 30;
-
-  controls = new THREE.TrackballControls( camera, renderer.domElement );
-  controls.rotateSpeed = 5.0;
-  controls.zoomSpeed = 1.0;
-  controls.panSpeed = 5.0;
-  controls.noZoom = false;
-  controls.noPan = false;
-  controls.staticMoving = true;
-  controls.dynamicDampingFactor = 0.3;
-  controls.keys = [ 65, 83, 68 ];
-  //controls.addEventListener( 'change', render );
+  controls = new THREE.PointerLockControls(camera);
+  scene.add(controls.getObject());
 
   var loader = new THREE.OBJLoader();
   loader.load('grass.obj',loadGrass);
@@ -56,16 +45,12 @@ function init() {
     windSettlingTime: 7.5,
     windStartTime: -100,
   };
-  gui = new dat.GUI();
-  gui.add(params, "curveFactor", 0.1,1.5);
-  gui.add(params, "spreadFactor", 1,10);
 
   clock = new THREE.Clock()
 }
 
 function render() {
   requestAnimationFrame(render);
-  controls.update();
   stats.update();
   if (mesh != undefined) {
     mesh.material.uniforms.time.value = clock.getElapsedTime();
@@ -105,7 +90,6 @@ function loadGrass(object) {
   var geometry = new THREE.InstancedBufferGeometry();
   // Start with only half of the maximum instances for low-performance computers
   geometry.maxInstancedCount = instances/2;
-  gui.add(geometry, 'maxInstancedCount',1,instances);
   geometry.addAttribute('position',vertices);
 
   var offsets = new THREE.InstancedBufferAttribute(new Float32Array(instances*3),3,1);
@@ -177,4 +161,47 @@ function loadGrass(object) {
   scene.add(mesh);
   render();
   wind();
+}
+
+// Much of the content of this function is reused from a Three.js example
+// at https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_pointerlock.html
+function setUpPointerLock() {
+  var blocker = document.getElementById( 'blocker' );
+  var instructions = document.getElementById( 'instructions' );
+  // http://www.html5rocks.com/en/tutorials/pointerlock/intro/
+  var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
+  if ( havePointerLock ) {
+    var element = document.body;
+    var pointerlockchange = function ( event ) {
+      if ( document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element ) {
+        // controlsEnabled = true;
+        controls.enabled = true;
+        blocker.style.display = 'none';
+      } else {
+        controls.enabled = false;
+        blocker.style.display = '-webkit-box';
+        blocker.style.display = '-moz-box';
+        blocker.style.display = 'box';
+        instructions.style.display = '';
+      }
+    };
+    var pointerlockerror = function ( event ) {
+      instructions.style.display = '';
+    };
+    // Hook pointer lock state change events
+    document.addEventListener( 'pointerlockchange', pointerlockchange, false );
+    document.addEventListener( 'mozpointerlockchange', pointerlockchange, false );
+    document.addEventListener( 'webkitpointerlockchange', pointerlockchange, false );
+    document.addEventListener( 'pointerlockerror', pointerlockerror, false );
+    document.addEventListener( 'mozpointerlockerror', pointerlockerror, false );
+    document.addEventListener( 'webkitpointerlockerror', pointerlockerror, false );
+    instructions.addEventListener( 'click', function ( event ) {
+      instructions.style.display = 'none';
+      // Ask the browser to lock the pointer
+      element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
+      element.requestPointerLock();
+    }, false );
+  } else {
+    instructions.innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API';
+  }
 }
