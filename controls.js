@@ -1,10 +1,15 @@
 // Much of the content of this file is reused from a Three.js example
 // at https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_pointerlock.html
+// See the three.js licence in the threejs subdirectory of this project
 var controls = {
 
-  setupPointerLock: function(scene, camea) {
-    var controls = new THREE.PointerLockControls(camera);
-    scene.add(controls.getObject());
+  moveForward: false,
+  moveLeft: false,
+  moveBackward: false,
+  moveRight: false,
+  velocity: new THREE.Vector3(),
+
+  setupPointerLock: function(controls) {
     var blocker = document.getElementById( 'blocker' );
     var instructions = document.getElementById( 'instructions' );
     // http://www.html5rocks.com/en/tutorials/pointerlock/intro/
@@ -43,5 +48,75 @@ var controls = {
     } else {
       instructions.innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API';
     }
+  },
+
+  setup: function(scene, camera) {
+    var controls = new THREE.PointerLockControls(camera);
+    scene.add(controls.getObject());
+    this.setupPointerLock(controls);
+    this.controls = controls;
+    this.prevTime = performance.now();
+
+    var self = this;
+    var onKeyDown = function ( event ) {
+      switch ( event.keyCode ) {
+        case 38: // up
+        case 87: // w
+        self.moveForward = true;
+        break;
+        case 37: // left
+        case 65: // a
+        self.moveLeft = true; break;
+        case 40: // down
+        case 83: // s
+        self.moveBackward = true;
+        break;
+        case 39: // right
+        case 68: // d
+        self.moveRight = true;
+        break;
+      }
+    };
+    var onKeyUp = function ( event ) {
+      switch( event.keyCode ) {
+        case 38: // up
+        case 87: // w
+        self.moveForward = false;
+        break;
+        case 37: // left
+        case 65: // a
+        self.moveLeft = false;
+        break;
+        case 40: // down
+        case 83: // s
+        self.moveBackward = false;
+        break;
+        case 39: // right
+        case 68: // d
+        self.moveRight = false;
+        break;
+      }
+    };
+    document.addEventListener( 'keydown', onKeyDown, false );
+    document.addEventListener( 'keyup', onKeyUp, false );
+  },
+
+  move: function() {
+    if ( this.controls.enabled ) {
+      var time = performance.now();
+      var delta = ( time - this.prevTime ) / 1000;
+      this.velocity.x -= this.velocity.x * 10.0 * delta;
+      this.velocity.z -= this.velocity.z * 10.0 * delta;
+      if ( this.moveForward ) this.velocity.z -= 400.0 * delta;
+      if ( this.moveBackward ) this.velocity.z += 400.0 * delta;
+      if ( this.moveLeft ) this.velocity.x -= 400.0 * delta;
+      if ( this.moveRight ) this.velocity.x += 400.0 * delta;
+
+      this.controls.getObject().translateX( this.velocity.x * delta );
+      this.controls.getObject().translateZ( this.velocity.z * delta );
+
+      this.prevTime = time;
+    }
   }
+
 }

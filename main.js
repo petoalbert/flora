@@ -25,7 +25,7 @@ function init() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  controls.setupPointerLock(scene,camera);
+  controls.setup(scene,camera);
 
   var loader = new THREE.OBJLoader();
   loader.load('grass.obj',loadGrass);
@@ -50,6 +50,7 @@ function init() {
 function render() {
   requestAnimationFrame(render);
   stats.update();
+  controls.move();
   if (mesh != undefined) {
     mesh.material.uniforms.time.value = clock.getElapsedTime();
     mesh.material.uniforms.curveFactor.value = params.curveFactor;
