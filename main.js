@@ -24,12 +24,12 @@ function init() {
     windRiseTime: 0.75,
     windSettlingTime: 7.5,
     windStartTime: -100,
-    fogNear: 10,
-    fogFar: 20,
     fogColor: new THREE.Color(0xaaaaee),
     groundColor: new THREE.Color(0x18780A),
     instances: 10000
   };
+  params.fogFar = params.spread/2;
+  params.fogNear = params.spread/4;
 
   camera = new THREE.PerspectiveCamera(75,
                                           window.innerWidth/window.innerHeight,
