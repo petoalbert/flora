@@ -60,6 +60,7 @@ function render() {
       params.windStartTime = clock.getElapsedTime();
       mesh.material.uniforms.windStartTime.value = params.windStartTime;
       mesh.material.uniforms.windAngle.value = Math.random()*2*Math.PI;
+      mesh.material.uniforms.windStart.value = controls.getPosition();
       params.newWind = false;
     }
   }
@@ -93,9 +94,9 @@ function loadGrass(object) {
 
   var offsets = new THREE.InstancedBufferAttribute(new Float32Array(instances*3),3,1);
   for (var i=0; i<offsets.count; i++) {
-      var r = Math.random()*params.spread-params.spread/2;
-      var a = Math.random()*Math.PI*2;
-      offsets.setXYZ(i, Math.cos(a)*r, 0, Math.sin(a)*r);
+      var x = Math.random()*params.spread-params.spread/2;
+      var z = Math.random()*params.spread-params.spread/2;
+      offsets.setXYZ(i, x, 0, z);
   }
   geometry.addAttribute('offset', offsets);
 
@@ -145,9 +146,11 @@ function loadGrass(object) {
       windStartTime: {value: clock.getElapsedTime()-100},
       spread: {value: params.spread},
       windAngle: {value: 0},
+      windStart: {value: new THREE.Vector3(0,0,0)},
       windSpeed: {value: params.windSpeed},
       windRiseTime: {value: params.windRiseTime},
-      windSettlingTime: {value: params.windSettlingTime}
+      windSettlingTime: {value: params.windSettlingTime},
+      playerPosition: {value: controls.getPosition()}
     },
     vertexShader: document.getElementById('vertexShader').textContent,
     fragmentShader: document.getElementById('fragmentShader').textContent,

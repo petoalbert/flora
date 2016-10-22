@@ -99,12 +99,18 @@ uniform float time;
 uniform float windStartTime;
 // The angle in which the wind blows. It is assumed to be between 0 and 2*PI
 uniform float windAngle;
+// The players position (the center of the circle) when the wind started
+uniform vec3 windStart;
 // The speed at which the wind travels through the field
 uniform float windSpeed;
 // The time it takes for the wind to fully deflect a grass piece
 uniform float windRiseTime;
 // The time it takes for the grass piece to go back to natural position
 uniform float windSettlingTime;
+// The position of the player (camera) in the grass field
+uniform vec3 playerPosition;
+
+vec3 viewOffset;
 
 const float PI = 3.141592653589793238462643383;
 // The original height in the y direction of a grass piece
@@ -144,7 +150,8 @@ float wind()
 {
   // the virtual distance of this vertex from the wind wave at the moment
   // when the wind started
-  float virtualDistance = (cos(windAngle)*offset.z + sin(windAngle)*offset.x)-spread/2.0;
+  float virtualDistance = (cos(windAngle)*(viewOffset.z-windStart.z) +
+                           sin(windAngle)*(viewOffset.x-windStart.x))-spread/2.0;
   // the relative position-dependent time since the wind has started
   float t = time-windStartTime+(virtualDistance/windSpeed);
   // helper values for the gaussian functions: spread the settlingSpread
@@ -209,6 +216,25 @@ float rotateInWind()
 
 }
 
+float round(float x) {
+  return floor(0.5+x);
+}
+
+/*
+ * Offset the grass piece with integer multiples of spread in the x and z directions
+ * to be in the near the players current position.
+ */
+void calculateViewOffset() {
+  vec3 playerPositionInPlane = vec3(playerPosition.x,0,playerPosition.z);
+  vec3 diff = playerPositionInPlane - offset;
+  viewOffset = offset;
+  float dlen = length(diff);
+  if (dlen > spread/2.0) {
+    viewOffset.x += round(diff.x/spread)*spread;
+    viewOffset.z += round(diff.z/spread)*spread;
+  }
+}
+
 void main()
 {
   vec3 vPosition = position;
@@ -218,6 +244,7 @@ void main()
   // wind is zero degrees
   float windAngle = angle;
 
+  calculateViewOffset();
   float windStrength = wind();
   // the imaginary radius of the arc
 
@@ -232,7 +259,9 @@ void main()
 
   // rotate around y axis
   vPosition = rotateAroundY(angle+rotateInWind()*abs(windStrength))*vPosition;
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(vPosition+offset*spreadFactor,1.0);
+
+
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(vPosition+viewOffset*spreadFactor,1.0);
   vColor = color;
 }
 

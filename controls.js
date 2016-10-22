@@ -120,6 +120,10 @@ var controls = {
 
       this.prevTime = time;
     }
+  },
+
+  getPosition: function() {
+    return this.controls.getObject().position;
   }
 
 }
