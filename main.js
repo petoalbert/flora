@@ -1,8 +1,7 @@
 init();
 render();
-setUpPointerLock();
 
-var scene, camera, renderer, controls;
+var scene, camera, renderer;
 var container, stats;
 
 var params;
@@ -26,8 +25,7 @@ function init() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  controls = new THREE.PointerLockControls(camera);
-  scene.add(controls.getObject());
+  controls.setupPointerLock(scene,camera);
 
   var loader = new THREE.OBJLoader();
   loader.load('grass.obj',loadGrass);
@@ -161,47 +159,4 @@ function loadGrass(object) {
   scene.add(mesh);
   render();
   wind();
-}
-
-// Much of the content of this function is reused from a Three.js example
-// at https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_pointerlock.html
-function setUpPointerLock() {
-  var blocker = document.getElementById( 'blocker' );
-  var instructions = document.getElementById( 'instructions' );
-  // http://www.html5rocks.com/en/tutorials/pointerlock/intro/
-  var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
-  if ( havePointerLock ) {
-    var element = document.body;
-    var pointerlockchange = function ( event ) {
-      if ( document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element ) {
-        // controlsEnabled = true;
-        controls.enabled = true;
-        blocker.style.display = 'none';
-      } else {
-        controls.enabled = false;
-        blocker.style.display = '-webkit-box';
-        blocker.style.display = '-moz-box';
-        blocker.style.display = 'box';
-        instructions.style.display = '';
-      }
-    };
-    var pointerlockerror = function ( event ) {
-      instructions.style.display = '';
-    };
-    // Hook pointer lock state change events
-    document.addEventListener( 'pointerlockchange', pointerlockchange, false );
-    document.addEventListener( 'mozpointerlockchange', pointerlockchange, false );
-    document.addEventListener( 'webkitpointerlockchange', pointerlockchange, false );
-    document.addEventListener( 'pointerlockerror', pointerlockerror, false );
-    document.addEventListener( 'mozpointerlockerror', pointerlockerror, false );
-    document.addEventListener( 'webkitpointerlockerror', pointerlockerror, false );
-    instructions.addEventListener( 'click', function ( event ) {
-      instructions.style.display = 'none';
-      // Ask the browser to lock the pointer
-      element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
-      element.requestPointerLock();
-    }, false );
-  } else {
-    instructions.innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API';
-  }
 }
