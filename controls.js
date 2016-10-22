@@ -8,10 +8,12 @@ var controls = {
   moveBackward: false,
   moveRight: false,
   velocity: new THREE.Vector3(),
+  controlsEnabled: false,
 
   setupPointerLock: function(controls) {
     var blocker = document.getElementById( 'blocker' );
     var instructions = document.getElementById( 'instructions' );
+    var self = this;
     // http://www.html5rocks.com/en/tutorials/pointerlock/intro/
     var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
     if ( havePointerLock ) {
@@ -20,6 +22,7 @@ var controls = {
         if ( document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element ) {
           // controlsEnabled = true;
           controls.enabled = true;
+          self.controlsEnabled = true;
           blocker.style.display = 'none';
         } else {
           controls.enabled = false;
@@ -102,7 +105,7 @@ var controls = {
   },
 
   move: function() {
-    if ( this.controls.enabled ) {
+    if ( this.controlsEnabled ) {
       var time = performance.now();
       var delta = ( time - this.prevTime ) / 1000;
       this.velocity.x -= this.velocity.x * 10.0 * delta;
