@@ -7,6 +7,8 @@ var container, stats;
 var params;
 var mesh;
 var clock;
+var sky;
+var ground;
 
 function init() {
   container = document.getElementById("container");
@@ -24,7 +26,8 @@ function init() {
     windStartTime: -100,
     fogNear: 10,
     fogFar: 20,
-    fogColor: new THREE.Color(0x000000)
+    fogColor: new THREE.Color(0xaaaaee),
+    groundColor: new THREE.Color(0x18780A)
   };
 
   camera = new THREE.PerspectiveCamera(75,
@@ -42,6 +45,19 @@ function init() {
 
   controls.setup(scene,camera);
 
+  var skyGeometry = new THREE.SphereBufferGeometry(params.spread*20, 32, 32);
+  var skyMaterial = new THREE.MeshBasicMaterial( {color: params.fogColor, fog: false } );
+  skyMaterial.side = THREE.DoubleSide;
+  sky = new THREE.Mesh(skyGeometry, skyMaterial);
+  scene.add(sky);
+
+  var groundGeometry = new THREE.CircleGeometry(params.spread/2, 32);
+  var groundMaterial = new THREE.MeshBasicMaterial({color: params.groundColor});
+  groundMaterial.side = THREE.DoubleSide;
+  ground = new THREE.Mesh(groundGeometry, groundMaterial);
+  ground.rotateX(Math.PI/2);
+  scene.add(ground);
+
   var loader = new THREE.OBJLoader();
   loader.load('grass.obj',loadGrass);
 
@@ -55,6 +71,12 @@ function render() {
   requestAnimationFrame(render);
   stats.update();
   controls.move();
+
+  // Move the ground and sky with the player
+  var pos = controls.getPosition().clone();
+  ground.position.set(pos.x,0,pos.z);
+  sky.position.set(pos.x,0,pos.z);
+
   if (mesh != undefined) {
     mesh.material.uniforms.time.value = clock.getElapsedTime();
     mesh.material.uniforms.curveFactor.value = params.curveFactor;
