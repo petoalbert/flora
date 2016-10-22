@@ -27,7 +27,8 @@ function init() {
     fogNear: 10,
     fogFar: 20,
     fogColor: new THREE.Color(0xaaaaee),
-    groundColor: new THREE.Color(0x18780A)
+    groundColor: new THREE.Color(0x18780A),
+    instances: 10000
   };
 
   camera = new THREE.PerspectiveCamera(75,
@@ -110,12 +111,12 @@ function onWindowResize( event ) {
 }
 
 function loadGrass(object) {
-  var instances = 20000;
+  var instances = params.instances;
 
   var vertices = object.children[0].geometry.getAttribute("position");
   var geometry = new THREE.InstancedBufferGeometry();
   // Start with only half of the maximum instances for low-performance computers
-  geometry.maxInstancedCount = instances/2;
+  geometry.maxInstancedCount = instances;
   geometry.addAttribute('position',vertices);
 
   var offsets = new THREE.InstancedBufferAttribute(new Float32Array(instances*3),3,1);
