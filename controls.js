@@ -110,10 +110,10 @@ var controls = {
       var delta = ( time - this.prevTime ) / 1000;
       this.velocity.x -= this.velocity.x * 10.0 * delta;
       this.velocity.z -= this.velocity.z * 10.0 * delta;
-      if ( this.moveForward ) this.velocity.z -= 400.0 * delta;
-      if ( this.moveBackward ) this.velocity.z += 400.0 * delta;
-      if ( this.moveLeft ) this.velocity.x -= 400.0 * delta;
-      if ( this.moveRight ) this.velocity.x += 400.0 * delta;
+      if ( this.moveForward ) this.velocity.z -= 200.0 * delta;
+      if ( this.moveBackward ) this.velocity.z += 200.0 * delta;
+      if ( this.moveLeft ) this.velocity.x -= 200.0 * delta;
+      if ( this.moveRight ) this.velocity.x += 200.0 * delta;
 
       this.controls.getObject().translateX( this.velocity.x * delta );
       this.controls.getObject().translateZ( this.velocity.z * delta );
