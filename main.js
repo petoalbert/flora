@@ -12,6 +12,21 @@ function init() {
   container = document.getElementById("container");
 
   scene = new THREE.Scene();
+
+  params = {
+    curveFactor: 1,
+    spreadFactor: 1,
+    newWind: false,
+    spread: 40,
+    windSpeed: 20,
+    windRiseTime: 0.75,
+    windSettlingTime: 7.5,
+    windStartTime: -100,
+    fogNear: 10,
+    fogFar: 20,
+    fogColor: new THREE.Color(0x000000)
+  };
+
   camera = new THREE.PerspectiveCamera(75,
                                           window.innerWidth/window.innerHeight,
                                           0.1,
@@ -32,17 +47,6 @@ function init() {
 
   stats = new Stats();
   container.appendChild(stats.dom);
-
-  params = {
-    curveFactor: 1,
-    spreadFactor: 1,
-    newWind: false,
-    spread: 40,
-    windSpeed: 20,
-    windRiseTime: 0.75,
-    windSettlingTime: 7.5,
-    windStartTime: -100,
-  };
 
   clock = new THREE.Clock()
 }
@@ -150,7 +154,10 @@ function loadGrass(object) {
       windSpeed: {value: params.windSpeed},
       windRiseTime: {value: params.windRiseTime},
       windSettlingTime: {value: params.windSettlingTime},
-      playerPosition: {value: controls.getPosition()}
+      playerPosition: {value: controls.getPosition()},
+      fogFar: {value: params.fogFar},
+      fogNear: {value: params.fogNear},
+      fogColor: {value: params.fogColor}
     },
     vertexShader: document.getElementById('vertexShader').textContent,
     fragmentShader: document.getElementById('fragmentShader').textContent,

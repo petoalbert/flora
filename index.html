@@ -269,10 +269,16 @@ void main()
 
 <script id="fragmentShader" type="x-shader/x-fragment">
 precision highp float;
+uniform vec3 fogColor;
+uniform float fogNear;
+uniform float fogFar;
 varying vec3 vColor;
 void main()
 {
     gl_FragColor = vec4(vColor, 1.0);
+    float depth = gl_FragCoord.z / gl_FragCoord.w;
+    float fogFactor = smoothstep( fogNear, fogFar, depth );
+    gl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor, fogFactor );
 }
 </script>
 
