@@ -19,11 +19,12 @@ function init() {
     curveFactor: 1,
     spreadFactor: 1,
     newWind: false,
-    spread: 40,
+    spread: 60,
     windSpeed: 20,
     windRiseTime: 0.75,
-    windSettlingTime: 7.5,
+    windSettlingTime: 2.0,
     windStartTime: -100,
+    windMaxInterval: 10,
     fogColor: new THREE.Color(0xaaaaee),
     groundColor: new THREE.Color(0x18780A),
     instances: 10000
@@ -34,7 +35,7 @@ function init() {
   camera = new THREE.PerspectiveCamera(75,
                                           window.innerWidth/window.innerHeight,
                                           0.1,
-                                          1000);
+                                          10000);
   renderer = new THREE.WebGLRenderer();
   if ( renderer.extensions.get( 'ANGLE_instanced_arrays' ) === false ) {
 	 //document.getElementById( "notSupported" ).style.display = "";
@@ -97,7 +98,7 @@ function render() {
 function wind() {
   // Iterate 30 times per second
   setTimeout(wind, 1000/30);
-  var windLength = (params.windRiseTime + params.windSettlingTime+params.spread/20)*1.2;
+  var windLength = (params.windRiseTime + params.windSettlingTime+params.spread/params.windSpeed)*1.2;
   // Only start new wind if the previous one has finished
   if (clock.getElapsedTime() - params.windStartTime > windLength) {
     params.newWind = true;

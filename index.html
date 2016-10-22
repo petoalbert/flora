@@ -178,8 +178,8 @@ float wind()
     return reverse*exp(-pow(abs(t-windRiseTime),2.0)/(2.0*pow(spread,2.0)));
   } else if (t > (windRiseTime+len)) {
     float x = t-windRiseTime-len;
-    // Do a full cosine in the settling phase
-    float f = 1.0*2.0*PI/windSettlingTime;
+    // Do a little more than a half cosine in the settling phase
+    float f = 0.55*2.0*PI/windSettlingTime;
     return reverse*cos(f*x)*exp(-pow(x,2.0)/(2.0*pow(settlingSpread,2.0)));
   } else {
     return reverse*1.0;
